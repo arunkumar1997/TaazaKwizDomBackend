@@ -1,4 +1,5 @@
 const Student = require("../models/studentModel.js");
+const Schools = require("../models/schoolModel.js");
 const MissingRecord = require("../models/missingRecords.js");
 const res = require("express/lib/response.js");
 
@@ -15,13 +16,20 @@ const getAllStudents = async (req, res) => {
   }
 };
 const searchSchoolList = async (req, res) => {
-  console.log("Input")
-  const schools = await Student.distinct("SchoolName");
+
+  const schools = await Schools.distinct("name")
   if (schools.length > 0) {
     res.json(schools);
   } else {
+    // const schoolsStud = await Student.distinct("SchoolName");
+    // if (schoolsStud.length > 0) {
+    //   // await Schools.insert(schoolsStud)
+    //   res.json(schoolsStud);
+    // } else {
     res.json({ message: "No Data..." });
+    // }
   }
+
 }
 
 
@@ -37,7 +45,7 @@ const searchResult = async (req, res) => {
   } else {
     const student = await Student.find({ SchoolName, PhoneNumber });
     if (student.length > 0) {
-      res.json(student);
+      res.json(student[0]);
     } else {
       res.json({ message: "No Such Student is Present..." });
     }
@@ -45,18 +53,22 @@ const searchResult = async (req, res) => {
 };
 
 const forgotNumber = async (req, res) => {
-  const { StudentName, DOB } = req.body;
+  const { StudentName, SchoolName, DOB } = req.body;
 
-  if (!StudentName && !DOB) {
+  if (!StudentName && !SchoolName && !DOB) {
     res.json({ message: "Please Fill All the Fields" });
   } else if (!StudentName) {
     res.json({ message: "Student Name not present" });
-  } else if (!DOB) {
+  } else if (!SchoolName) {
+    res.json({ message: "SchoolName not present" });
+  }
+  else if (!DOB) {
     res.json({ message: "DOB not present" });
-  } else {
-    const student = await Student.find({ StudentName, DOB });
+  }
+  else {
+    const student = await Student.find({ StudentName, SchoolName });
     if (student.length > 0) {
-      res.json(student);
+      res.json(student[0]);
     } else {
       res.json({ message: "No Such Student is Present..." });
     }
@@ -81,13 +93,20 @@ const studentRequest = async (req, res) => {
 };
 
 const missingRecords = async (req, res) => {
-  const { SchoolName, StudentName, DOB, PhoneNumber } = req.body
+  const { StudentName, SchoolName, PhoneNumber, DOB } = req.body
 
-  if (SchoolName && StudentName && DOB && PhoneNumber) {
-    const missingStudent = await MissingRecord.save();
+  if (StudentName && SchoolName && PhoneNumber && DOB) {
+    const missingStudent = await MissingRecord.create({
+      StudentName: StudentName,
+      SchoolName: SchoolName,
+      PhoneNumber: PhoneNumber,
+      DOB: DOB
+    });
 
     if (missingStudent) {
       res.json(missingStudent)
+    } else {
+      res.json("Failed to insert")
     }
   }
 
