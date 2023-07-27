@@ -21,16 +21,18 @@ const searchSchoolList = async (req, res) => {
   if (schools.length > 0) {
     res.json(schools);
   } else {
-    // const schoolsStud = await Student.distinct("SchoolName");
-    // if (schoolsStud.length > 0) {
-    //   // await Schools.insert(schoolsStud)
-    //   res.json(schoolsStud);
-    // } else {
-    res.json({ message: "No Data..." });
-    // }
+    const schoolsStud = await Student.distinct("SchoolName");
+    if (schoolsStud.length > 0) {
+      // await Schools.insert(schoolsStud)
+      res.json(schoolsStud);
+    } else {
+      res.json({ message: "No Data..." });
+    }
   }
 
 }
+
+
 
 
 const searchResult = async (req, res) => {
@@ -93,14 +95,16 @@ const studentRequest = async (req, res) => {
 };
 
 const missingRecords = async (req, res) => {
-  const { StudentName, SchoolName, PhoneNumber, DOB } = req.body
+  const { StudentName, SchoolName, PhoneNumber, DOB, Remarks } = req.body
 
   if (StudentName && SchoolName && PhoneNumber && DOB) {
     const missingStudent = await MissingRecord.create({
       StudentName: StudentName,
       SchoolName: SchoolName,
       PhoneNumber: PhoneNumber,
-      DOB: DOB
+      DOB: DOB,
+      Remarks: Remarks,
+
     });
 
     if (missingStudent) {

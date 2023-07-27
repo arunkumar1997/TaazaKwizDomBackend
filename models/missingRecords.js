@@ -28,6 +28,11 @@ const missingRecordSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    Remarks: {
+        type: String,
+        required: false
+    },
+
 
 })
 
