@@ -79,18 +79,6 @@ const forgotNumber = async (req, res) => {
 };
 
 const studentRequest = async (req, res) => {
-  // const id = req.params.id;
-
-  //  const student = await Student.findById(id);
-
-  // EditStudent
-
-  // if (student) {
-  //   (student.requestedName = req.body.requestedName || student.requestedName),
-  //     (student.requestedSchoolName = req.body.requestedSchoolName || student.requestedSchoolName)
-
-  // }
-
 
   if (req.body.requestedName && req.body.requestedSchoolName) {
     const editStudent = await EditStudent.create({
@@ -99,7 +87,7 @@ const studentRequest = async (req, res) => {
       SchoolName: req.body.requestedSchoolName,
     });
 
-    const updatedStudent = await student.save();
+    const updatedStudent = await editStudent.save();
 
     if (updatedStudent) {
       res.json(updatedStudent);
