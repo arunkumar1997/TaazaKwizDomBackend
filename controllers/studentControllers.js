@@ -1,4 +1,5 @@
 const Student = require("../models/studentModel.js");
+const EditStudent = require("../models/editStudentModel.js");
 const Schools = require("../models/schoolModel.js");
 const MissingRecord = require("../models/missingRecords.js");
 const res = require("express/lib/response.js");
@@ -78,21 +79,33 @@ const forgotNumber = async (req, res) => {
 };
 
 const studentRequest = async (req, res) => {
-  const id = req.params.id;
+  // const id = req.params.id;
 
-  const student = await Student.findById(id);
+  //  const student = await Student.findById(id);
 
-  if (student) {
-    (student.requestedName = req.body.requestedName || student.requestedName),
-      (student.requestedSchoolName = req.body.requestedSchoolName || student.requestedSchoolName)
-  }
+  // EditStudent
 
-  const updatedStudent = await student.save();
+  // if (student) {
+  //   (student.requestedName = req.body.requestedName || student.requestedName),
+  //     (student.requestedSchoolName = req.body.requestedSchoolName || student.requestedSchoolName)
 
-  if (updatedStudent) {
-    res.json(updatedStudent);
-  }
-};
+  // }
+
+
+  if (req.body.requestedName && req.body.requestedSchoolName) {
+    const editStudent = await EditStudent.create({
+      Refid: req.params.id,
+      StudentName: req.body.requestedName,
+      SchoolName: req.body.requestedSchoolName,
+    });
+
+    const updatedStudent = await student.save();
+
+    if (updatedStudent) {
+      res.json(updatedStudent);
+    }
+  };
+}
 
 const missingRecords = async (req, res) => {
   const { StudentName, SchoolName, PhoneNumber, DOB, Remarks } = req.body
@@ -116,4 +129,15 @@ const missingRecords = async (req, res) => {
 
 }
 
-module.exports = { getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords };
+const getStudentData = async (req, res) => {
+  const id = req.params.id
+  const student = await Student.findById(id)
+  if (student) {
+    res.json({
+      StudentName: student.StudentName,
+      SchoolName: student.SchoolName
+    })
+  }
+}
+
+module.exports = { getStudentData, getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords };
