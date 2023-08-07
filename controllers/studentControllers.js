@@ -33,8 +33,35 @@ const searchSchoolList = async (req, res) => {
 
 }
 
+const getSchoolList = async (req, res) => {
+  const SchoolList = await Schools.find({})
 
+  if (SchoolList) {
+    res.json(SchoolList)
+  } else {
+    res.json({ message: "No SchoolList" })
+  }
+}
 
+const getEditStudentList = async (req, res) => {
+  const editStudentlist = await EditStudent.find({})
+
+  if (editStudentlist) {
+    res.json(editStudentlist)
+  } else {
+    res.json({ message: "No Edit Student" })
+  }
+}
+
+const getMissingRecordsList = async (req, res) => {
+  const misingRecordlist = await MissingRecord.find({})
+
+  if (misingRecordlist) {
+    res.json(misingRecordlist)
+  } else {
+    res.json({ message: "No Missing Record" })
+  }
+}
 
 const searchResult = async (req, res) => {
   const { SchoolName, PhoneNumber } = req.body;
@@ -128,4 +155,4 @@ const getStudentData = async (req, res) => {
   }
 }
 
-module.exports = { getStudentData, getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords };
+module.exports = { getStudentData, getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords, getSchoolList, getEditStudentList, getMissingRecordsList };
