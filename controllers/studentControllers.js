@@ -4,6 +4,7 @@ const Schools = require("../models/schoolModel.js");
 const MissingRecord = require("../models/missingRecords.js");
 const res = require("express/lib/response.js");
 
+
 const getAllStudents = async (req, res) => {
   try {
     const students = await Student.find({});
@@ -105,54 +106,118 @@ const forgotNumber = async (req, res) => {
   }
 };
 
+// const studentRequest = async (req, res) => {
+
+//   const editStudent = await EditStudent.create({
+//     Refid: req.params.id,
+//     requestedName : req.body.requestedName || StudentName,
+//     requestedSchoolName : req.body.requestedSchoolName || SchoolName,
+//     PhoneNumber : req.body.PhoneNumber
+//   });
+
+//   const updatedStudent = await editStudent.save();
+
+//   if (updatedStudent) {
+//     res.json(updatedStudent);
+//   }
+// }
+
 const studentRequest = async (req, res) => {
+  try {
+    const editStudent = await Student.findById(req.params.id);
 
-  if (req.body.requestedName && req.body.requestedSchoolName) {
-    const editStudent = await EditStudent.create({
-      Refid: req.params.id,
-      StudentName: req.body.requestedName,
-      SchoolName: req.body.requestedSchoolName,
-    });
+    if (editStudent) {
+      editStudent.requestedName = req.body.requestedName || editStudent.StudentName;
+      editStudent.requestedSchoolName = req.body.requestedSchoolName || editStudent.SchoolName;
 
-    const updatedStudent = await editStudent.save();
+      const updatedStudent = await editStudent.save();
 
-    if (updatedStudent) {
-      res.json(updatedStudent);
+      if (updatedStudent) {
+        // Create a new instance of EditStudent and populate it with the updated data
+        const newEditStudent = new EditStudent({
+          Refid: editStudent._id,
+          requestedName: updatedStudent.requestedName,
+          requestedSchoolName: updatedStudent.requestedSchoolName,
+          SchoolName: updatedStudent.SchoolName,
+          StudentName: updatedStudent.StudentName,
+          PhoneNumber: updatedStudent.PhoneNumber
+        });
+
+        const savedEditStudent = await newEditStudent.save();
+
+        if (savedEditStudent) {
+          res.json(savedEditStudent);
+        }
+      }
+    } else {
+      res.status(404).json({ error: 'Student not found' });
     }
-  };
-}
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while updating the student.' });
+  }
+};
+
 
 const missingRecords = async (req, res) => {
   const { StudentName, SchoolName, PhoneNumber, DOB, Remarks } = req.body
 
-  if (StudentName && SchoolName && PhoneNumber && DOB) {
-    const missingStudent = await MissingRecord.create({
-      StudentName: StudentName,
-      SchoolName: SchoolName,
-      PhoneNumber: PhoneNumber,
-      DOB: DOB,
-      Remarks: Remarks,
 
-    });
+  const missingStudent = await MissingRecord.create({
+    StudentName: StudentName,
+    SchoolName: SchoolName,
+    PhoneNumber: PhoneNumber,
+    DOB: DOB,
+    Remarks: Remarks,
+  });
 
-    if (missingStudent) {
-      res.json(missingStudent)
-    } else {
-      res.json("Failed to insert")
-    }
+  if (missingStudent) {
+    res.json(missingStudent)
+  } else {
+    res.json("Failed to insert")
   }
 
+
 }
+
+// const getStudentData = async (req, res) => {
+//   const id = req.params.id
+//   const student = await Student.findById(id)
+//   if (student) {
+//     res.json({
+//       StudentName: student.StudentName,
+//       SchoolName: student.SchoolName
+//     })
+//   }
+// }
 
 const getStudentData = async (req, res) => {
   const id = req.params.id
   const student = await Student.findById(id)
   if (student) {
-    res.json({
-      StudentName: student.StudentName,
-      SchoolName: student.SchoolName
-    })
+    res.json(student)
   }
 }
 
-module.exports = { getStudentData, getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords, getSchoolList, getEditStudentList, getMissingRecordsList };
+const createRecord = async (req, res) => {
+  const { SchoolName, StudentName, DOB, PhoneNumber } = req.body;
+
+  try {
+    // Create a new record using the Student model
+    const newRecord = await Student.create({
+      SchoolName,
+      StudentName,
+      DOB,
+      PhoneNumber
+    });
+
+    res.status(201).json(newRecord);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred while creating the record.' });
+  }
+};
+
+
+
+
+module.exports = { getStudentData, getAllStudents, studentRequest, searchResult, forgotNumber, searchSchoolList, missingRecords, getSchoolList, getEditStudentList, getMissingRecordsList, createRecord };

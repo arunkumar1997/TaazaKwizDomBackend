@@ -32,8 +32,10 @@ const missingRecordSchema = mongoose.Schema({
         type: String,
         required: false
     },
-
-
+    isCreated: {
+        type: Boolean,
+        default: false
+    }
 })
 
 const MissingRecords = mongoose.model("MissingRecords", missingRecordSchema)

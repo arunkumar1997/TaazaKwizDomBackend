@@ -34,7 +34,7 @@ const studentSchema = mongoose.Schema({
     },
     Class: {
         type: Number,
-        // required: true
+        default: 0
     },
     // Section:{
     //     type:String,
@@ -42,11 +42,11 @@ const studentSchema = mongoose.Schema({
     // },
     PhoneNumber: {
         type: Number,
-        // required: true
+        default: 0
     },
     Marks: {
         type: Number,
-        // required: true
+        default: 0
     },
     // isChanged:{
     //     type:Boolean,
@@ -54,7 +54,7 @@ const studentSchema = mongoose.Schema({
     // },
     Grade: {
         type: String,
-        // required: true
+        default: "OMR Incomplete"
     }
 })
 
