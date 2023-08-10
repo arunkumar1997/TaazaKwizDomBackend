@@ -34,7 +34,8 @@ const missingRecordSchema = mongoose.Schema({
     },
     isCreated: {
         type: Boolean,
-        default: false
+        default: false,
+        required: true
     }
 })
 

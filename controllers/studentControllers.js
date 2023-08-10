@@ -199,24 +199,68 @@ const getStudentData = async (req, res) => {
   }
 }
 
+// const createRecord = async (req, res) => {
+//   const editStudent = await MissingRecord.findOne({ PhoneNumber: 1234567894 })
+
+//   if (editStudent) {
+//     editStudent.isCreated = true;
+//   }
+//   res.json(editStudent);
+
+//   const { SchoolName, StudentName, DOB, PhoneNumber } = req.body;
+
+//   try {
+//     // Create a new record using the Student model
+//     const newRecord = await Student.create({
+//       SchoolName,
+//       StudentName,
+//       DOB,
+//       PhoneNumber
+//     });
+
+//     res.status(201).json(newRecord);
+//   } catch (error) {
+//     res.status(500).json({ error: 'An error occurred while creating the record.' });
+//   }
+// };
+
 const createRecord = async (req, res) => {
   const { SchoolName, StudentName, DOB, PhoneNumber } = req.body;
 
-  try {
-    // Create a new record using the Student model
-    const newRecord = await Student.create({
-      SchoolName,
-      StudentName,
-      DOB,
-      PhoneNumber
-    });
+  const session = await Student.startSession();
+  session.startTransaction();
 
-    res.status(201).json(newRecord);
+  try {
+    // Find the missing record and update if found within the session
+    const editStudent = await MissingRecord.findOne({ PhoneNumber: PhoneNumber }).session(session);
+    if (editStudent) {
+      editStudent.isCreated = true;
+      await editStudent.save();
+    }
+
+    // Create a new record using the Student model within the session
+    const newRecord = await Student.create(
+      [
+        {
+          SchoolName,
+          StudentName,
+          DOB,
+          PhoneNumber
+        }
+      ],
+      { session }
+    );
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json(editStudent);
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ error: 'An error occurred while creating the record.' });
   }
 };
-
 
 
 

@@ -14,6 +14,14 @@ const registerAdmin = async (req, res) => {
   res.json(admin)
 }
 
+const getAdmin = async (req, res) => {
+  const getadmin = await Admin.findOne({ email: "admin@example.com" });
+
+  if (getadmin) {
+    res.json(getadmin)
+  }
+}
+
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
@@ -85,5 +93,6 @@ const adminChange = async (req, res) => {
 module.exports = {
   registerAdmin,
   loginAdmin,
-  adminChange
+  adminChange,
+  getAdmin
 }
