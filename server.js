@@ -5,7 +5,7 @@ const studentRoute = require("./routes/studentRoutes.js")
 const adminRoutes = require("./routes/adminRoutes.js")
 
 connectDB()
-const password="passwo4d"
+const password = 'pas4word'
 const app = express()
 
 app.use(cors())
